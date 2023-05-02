@@ -7,7 +7,7 @@ canvas.height = 400;
 class Neck{
     constructor(tune){
         this.stringNum = 6;
-        this.frets = 12;
+        this.frets = 15;
         //             0   1    2   3   4    5   6    7   8   9   10   11
         this.notes = ["a","a#","b","c","c#","d","d#","e","f","f#","g","g#"];
         //               standard       drop-d
@@ -25,7 +25,6 @@ class Neck{
         this.scales = {
             chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
             major: [2,2,1,2,2,2,1],
-            mainor: [2,1,2,2,1,2,2],
         };
         this.scale = this.scales.major;
         this.tonic = 8;
@@ -35,7 +34,7 @@ class Neck{
     
     initNeck(){
         for(let i = 0; i < this.stringNum;i++){
-            this.strings.unshift(new GString(this.frets,this.tuning[i]));
+            this.strings.unshift(new GString(this,this.tuning[i],this.frets));
         }
         this.draw();
     }
@@ -108,58 +107,43 @@ class Neck{
             
     }
 
-    drawSingleNote(str,fret,noteText,isTonic){
+    drawSingleNote(str,fret){
         let x = (this.neckWidth/this.frets*fret)+this.neckPos.startX+(this.neckWidth/this.frets)/2;
         let y = str.yPos;
         c.beginPath();
         c.arc(x,y,17,0,Math.PI*2);
-        c.fillStyle = isTonic? '#ff0000':'#000000';
+        c.fillStyle = '#000000';
         c.fill();
         c.stroke();
         c.textAlign = "center";
         c.textBaseline = "middle";
         c.beginPath();
         c.fillStyle = '#ffffff';
-        c.fillText(noteText,x,y);
-    }
-
-    drawNotes2(){
-        this.strings.forEach(strin =>{
-            let index = ((this.tonic+12)-strin.openNote+1)%12;
-            for(let i = 0; i < strin.notes.length; i++){
-                let isTonic = this.tonic==strin.notes[i]%12? true : false;
-                this.drawSingleNote(strin,i,this.notes[strin.notes[i]%12],isTonic);
-            }
-        });
-    }
-
-    lilTest(){
-        this.strings.forEach(strin =>{
-            let index = ((this.tonic+12)-(strin.openNote+1))%12;
-            //position sontrolled by sum of erm steps
-            this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12],true);
-            let tonicLoc = index;
-            this.scale.forEach(step =>{
-                index = (step+index)%12;
-                if(index != tonicLoc) this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12]);
-                
-            })
-        });
+        c.fillText(str.notes[fret].note,x,y);
     }
 }
 
 class GString{
-    constructor(num,openNote){
+    constructor(neck,note,num){
         this.yPos; //this value is declared within draw... my bad
+        this.note = note;
         this.notes = [];
-        this.openNote = openNote;
-        for(let i = 1; i<num+1; i++){
-            this.notes.push(openNote+i);
+        for(let i = 0; i < num; i++){
+            // this.notes.push(neck.notes[i]);
+            this.notes.push(new Note(i+note+1));
         }
     }
 }
 
-
+class Note{
+    constructor(note){
+        this.notes = ["a","a#","b","c","c#","d","d#","e","f","f#","g","g#"];
+        this.noteNum = note;
+        this.note = this.notes[this.noteNum%12];
+    }
+}
+//refactor idea for note class:
+//use array within the neck class of strings and use that to convert the array of strings into an array of note objects using each one as a paramater in the constructor. Use like a foreach or map or something not too sure.
 
 
 
@@ -169,4 +153,5 @@ function loop(){
 }
 
 let guitar = new Neck(0);
-guitar.lilTest();
+init();
+guitar.drawNotes();
