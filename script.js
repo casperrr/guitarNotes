@@ -22,13 +22,23 @@ class Neck{
             endX: (canvas.width-this.neckWidth)/2 + this.neckWidth,
             endY: (canvas.height-this.neckHeight)/2 + this.neckHeight,
         };
-        this.scales = {
-            chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
-            major: [2,2,1,2,2,2,1],
-            mainor: [2,1,2,2,1,2,2],
-        };
-        this.scale = this.scales.major;
-        this.tonic = 8;
+        // this.scales = {
+        //     chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
+        //     major: [2,2,1,2,2,2,1],
+        //     minor: [2,1,2,2,1,2,2],
+        //     minPent:[3,2,2,3,2],
+        //     majPent:[2,2,3,2,3],
+        //     japan: [1,4,2,1,4],
+        // };
+
+        this.scales = [
+            {name: "chromatic", degs: [1,1,1,1,1,1,1,1,1,1,1,1]},
+            {name: "major", degs: [2,2,1,2,2,2,1]},
+            {name: "minor", degs: [2,1,2,2,1,2,2]}
+        ];
+
+        this.scale = this.scales[0].degs;
+        this.root = 0;
 
         this.initNeck();
     }
@@ -98,7 +108,7 @@ class Neck{
         //calculate the scales right?
         //first let me draw the notes and then i might just use the array of like steps to figure out the erm when to draw and when to not like u know like just skip some of them in the array based on the value in the array u feel me?
         this.strings.forEach(strin =>{
-            let index = strin.note-this.tonic; //note - tonic
+            let index = strin.note-this.root; //note - root
             this.scale.forEach(step =>{
                 index += step;
                 this.drawSingleNote(strin,index)
@@ -108,12 +118,12 @@ class Neck{
             
     }
 
-    drawSingleNote(str,fret,noteText,isTonic){
+    drawSingleNote(str,fret,noteText,isroot){
         let x = (this.neckWidth/this.frets*fret)+this.neckPos.startX+(this.neckWidth/this.frets)/2;
         let y = str.yPos;
         c.beginPath();
         c.arc(x,y,17,0,Math.PI*2);
-        c.fillStyle = isTonic? '#ff0000':'#000000';
+        c.fillStyle = isroot? '#ff0000':'#000000';
         c.fill();
         c.stroke();
         c.textAlign = "center";
@@ -125,26 +135,31 @@ class Neck{
 
     drawNotes2(){
         this.strings.forEach(strin =>{
-            let index = ((this.tonic+12)-strin.openNote+1)%12;
+            let index = ((this.root+12)-strin.openNote+1)%12;
             for(let i = 0; i < strin.notes.length; i++){
-                let isTonic = this.tonic==strin.notes[i]%12? true : false;
-                this.drawSingleNote(strin,i,this.notes[strin.notes[i]%12],isTonic);
+                let isroot = this.root==strin.notes[i]%12? true : false;
+                this.drawSingleNote(strin,i,this.notes[strin.notes[i]%12],isroot);
             }
         });
     }
 
     lilTest(){
         this.strings.forEach(strin =>{
-            let index = ((this.tonic+12)-(strin.openNote+1))%12;
+            let index = ((this.root+12)-(strin.openNote+1))%12;
             //position sontrolled by sum of erm steps
             this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12],true);
-            let tonicLoc = index;
+            let rootLoc = index;
             this.scale.forEach(step =>{
                 index = (step+index)%12;
-                if(index != tonicLoc) this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12]);
+                if(index != rootLoc) this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12]);
                 
             })
         });
+    }
+
+    clearNeck(){
+        c.clearRect(0,0,canvas.width,canvas.height);
+        this.draw();
     }
 }
 
@@ -159,6 +174,39 @@ class GString{
     }
 }
 
+//UI
+function UI(){
+    UIContainer = document.createElement("div");
+    UIContainer.classList.add("UIcontainer");
+
+    //-----------Scale Selector-----------------------
+    let scaleSelect = document.createElement("select");
+    scaleSelect.classList.add("dropDown");
+    scaleSelect.classList.add("scale");
+    scaleSelect.setAttribute("value","scale");
+    document.body.appendChild(UIContainer);
+    UIContainer.appendChild(scaleSelect);
+    for(let i = 0; i < guitar.scales.length; i++){
+        let option = document.createElement("option");
+        option.setAttribute("value",`${i}`);
+        option.innerHTML = `${guitar.scales[i].name}`;
+        scaleSelect.appendChild(option)
+    }
+    
+    //----------Root Note-----------------------------
+    let rootSelect = document.createElement("select");
+    rootSelect.classList.add("dropDown");
+    rootSelect.classList.add("root");
+    rootSelect.setAttribute("value","root");
+    UIContainer.appendChild(rootSelect);
+    for(let i = 0; i < guitar.notes.length; i++){
+        let option = document.createElement("option");
+        option.setAttribute("value",`${i}`);
+        option.innerHTML = `${guitar.notes[i]}`;
+        rootSelect.appendChild(option);
+    }
+} 
+
 
 
 
@@ -169,4 +217,21 @@ function loop(){
 }
 
 let guitar = new Neck(0);
+UI();
 guitar.lilTest();
+
+UIContainer.onchange = (e)=>{
+    // console.log(e.target.classList[1]);
+    switch(e.target.classList[1]){
+        case "scale":
+            console.log(e.target.value);
+            guitar.scale = guitar.scales[e.target.value].degs;
+            break;
+        case "root":
+            console.log(e.target.value);
+            guitar.root = parseInt(e.target.value);
+            break;
+    }
+    guitar.clearNeck();
+    guitar.lilTest();
+}
