@@ -5,12 +5,38 @@
     background: black;
 }
 
-#canvas{
+body{
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+/* #canvas{
     border: 2px solid white;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
-    /* width: 800px;
-    height: 800px; */
+} */
+
+option{
+    color: white;
+}
+
+.dropDown{
+    padding: 10px;
+    border-radius: 10px;
+    font-size: large;
+    font-weight: 100;
+}
+
+.UIcontainer{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tuning{
+    margin-left: auto;
 }

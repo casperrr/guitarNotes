@@ -5,14 +5,18 @@ canvas.width = 800;
 canvas.height = 400;
 
 class Neck{
-    constructor(tune){
+    constructor(){
         this.stringNum = 6;
-        this.frets = 15;
+        this.frets = 12;
         //             0   1    2   3   4    5   6    7   8   9   10   11
         this.notes = ["a","a#","b","c","c#","d","d#","e","f","f#","g","g#"];
         //               standard       drop-d
-        this.tunings = [[7,0,5,10,2,7],[5,0,5,10,2,7]];
-        this.tuning = this.tunings[tune];
+        this.tunings = [
+            {name: "Standard", tunNotes:[7,0,5,10,2,7]},
+            {name: "Drop-D", tunNotes:[5,0,5,10,2,7]},
+            {name: "New Standard", tunNotes:[3,10,5,0,7,10]}
+        ];
+        this.tuning = this.tunings[0].tunNotes;
         this.strings = [];
         this.neckWidth = canvas.width*(1-0.03*2);
         this.neckHeight = canvas.height*(1-0.15*2);
@@ -22,19 +26,33 @@ class Neck{
             endX: (canvas.width-this.neckWidth)/2 + this.neckWidth,
             endY: (canvas.height-this.neckHeight)/2 + this.neckHeight,
         };
-        this.scales = {
-            chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
-            major: [2,2,1,2,2,2,1],
-        };
-        this.scale = this.scales.major;
-        this.tonic = 8;
+        // this.scales = {
+        //     chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
+        //     major: [2,2,1,2,2,2,1],
+        //     minor: [2,1,2,2,1,2,2],
+        //     minPent:[3,2,2,3,2],
+        //     majPent:[2,2,3,2,3],
+        //     japan: [1,4,2,1,4],
+        // };
+
+        this.scales = [
+            {name: "chromatic", degs: [1,1,1,1,1,1,1,1,1,1,1,1]},
+            {name: "major", degs: [2,2,1,2,2,2,1]},
+            {name: "minor", degs: [2,1,2,2,1,2,2]},
+            {name: "minPent", degs: [3,2,2,3,2]},
+            {name: "majPent", degs: [2,2,3,2,3]},
+            {name: "japan", degs: [1,4,2,1,4]},
+        ];
+
+        this.scale = this.scales[0].degs;
+        this.root = 0;
 
         this.initNeck();
     }
     
     initNeck(){
         for(let i = 0; i < this.stringNum;i++){
-            this.strings.unshift(new GString(this,this.tuning[i],this.frets));
+            this.strings.unshift(new GString(this.frets,this.tuning[i]));
         }
         this.draw();
     }
@@ -85,10 +103,12 @@ class Neck{
             }
         }
         //draw open notes
+        c.textAlign = "center";
+        c.textBaseline = "middle";
         c.font = "20px sans-serif";
         c.fillStyle = "#ffffff";
         for(let i = 0; i<this.stringNum; i++){
-            c.fillText((this.notes[this.tuning[this.tuning.length-i-1]]).toUpperCase(),6,this.neckPos.startY+(i+1)*stringInterval+(stringInterval/5))
+            c.fillText((this.notes[this.tuning[this.tuning.length-i-1]]).toUpperCase(),6,this.neckPos.startY+(i+0.85)*stringInterval+(stringInterval/5))
         }
 
     }
@@ -97,70 +117,148 @@ class Neck{
         //calculate the scales right?
         //first let me draw the notes and then i might just use the array of like steps to figure out the erm when to draw and when to not like u know like just skip some of them in the array based on the value in the array u feel me?
         this.strings.forEach(strin =>{
-            let index = strin.note-this.tonic; //note - tonic
+            let index = strin.note-this.root; //note - root
             this.scale.forEach(step =>{
                 index += step;
                 this.drawSingleNote(strin,index)
             });
         })
-        // this.strings.forEach(strin =>{
-        //     this.scale.forEach(step =>{
-        //         for(let i = 0; i < this.frets; i+=step){
-        //             this.drawSingleNote(strin,i);
-        //         }
-        //     });
-        // })
-        
+
             
     }
 
-    drawSingleNote(str,fret){
+    drawSingleNote(str,fret,noteText,isroot){
         let x = (this.neckWidth/this.frets*fret)+this.neckPos.startX+(this.neckWidth/this.frets)/2;
         let y = str.yPos;
         c.beginPath();
         c.arc(x,y,17,0,Math.PI*2);
-        c.fillStyle = '#000000';
+        c.fillStyle = isroot? '#ff0000':'#000000';
         c.fill();
         c.stroke();
         c.textAlign = "center";
         c.textBaseline = "middle";
         c.beginPath();
         c.fillStyle = '#ffffff';
-        c.fillText(str.notes[fret].note,x,y);
+        c.fillText(noteText,x,y);
+    }
+
+    drawNotes2(){
+        this.strings.forEach(strin =>{
+            let index = ((this.root+12)-strin.openNote+1)%12;
+            for(let i = 0; i < strin.notes.length; i++){
+                let isroot = this.root==strin.notes[i]%12? true : false;
+                this.drawSingleNote(strin,i,this.notes[strin.notes[i]%12],isroot);
+            }
+        });
+    }
+
+    lilTest(){
+        this.strings.forEach(strin =>{
+            let index = ((this.root+12)-(strin.openNote+1))%12;
+            //position sontrolled by sum of erm steps
+            this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12],true);
+            let rootLoc = index;
+            this.scale.forEach(step =>{
+                index = (step+index)%12;
+                if(index != rootLoc) this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12]);
+                
+            })
+        });
+    }
+
+    clearNeck(){
+        c.clearRect(0,0,canvas.width,canvas.height);
+        this.draw();
     }
 }
 
 class GString{
-    constructor(neck,note,num){
+    constructor(num,openNote){
         this.yPos; //this value is declared within draw... my bad
-        this.note = note;
         this.notes = [];
-        for(let i = 0; i < num; i++){
-            // this.notes.push(neck.notes[i]);
-            this.notes.push(new Note(i+note+1));
+        this.openNote = openNote;
+        for(let i = 1; i<num+1; i++){
+            this.notes.push(openNote+i);
         }
     }
 }
 
-class Note{
-    constructor(note){
-        this.notes = ["a","a#","b","c","c#","d","d#","e","f","f#","g","g#"];
-        this.noteNum = note;
-        this.note = this.notes[this.noteNum%12];
+//UI
+function UI(){
+    UIContainer = document.createElement("div");
+    UIContainer.classList.add("UIcontainer");
+
+    //-----------Scale Selector-----------------------
+    let scaleSelect = document.createElement("select");
+    scaleSelect.classList.add("dropDown");
+    scaleSelect.classList.add("scale");
+    scaleSelect.setAttribute("value","scale");
+    document.body.appendChild(UIContainer);
+    UIContainer.appendChild(scaleSelect);
+    for(let i = 0; i < guitar.scales.length; i++){
+        let option = document.createElement("option");
+        option.setAttribute("value",`${i}`);
+        option.innerHTML = `${guitar.scales[i].name}`;
+        scaleSelect.appendChild(option)
     }
-}
-//refactor idea for note class:
-//use array within the neck class of strings and use that to convert the array of strings into an array of note objects using each one as a paramater in the constructor. Use like a foreach or map or something not too sure.
+    
+    //----------Root Note-----------------------------
+    let rootSelect = document.createElement("select");
+    rootSelect.classList.add("dropDown");
+    rootSelect.classList.add("root");
+    rootSelect.setAttribute("value","root");
+    UIContainer.appendChild(rootSelect);
+    for(let i = 0; i < guitar.notes.length; i++){
+        let option = document.createElement("option");
+        option.setAttribute("value",`${i}`);
+        option.innerHTML = `${guitar.notes[i]}`;
+        rootSelect.appendChild(option);
+    }
 
-function init(){
+    //----------Tuning--------------------------------
+    let tuningSelect = document.createElement("select");
+    tuningSelect.classList.add("dropDown");
+    tuningSelect.classList.add("tuning");
+    rootSelect.setAttribute("value","tuning");
+    UIContainer.appendChild(tuningSelect);
+    for(let i = 0; i < guitar.tunings.length; i++){
+        let option = document.createElement("option");
+        option.setAttribute("value", `${i}`);
+        option.innerHTML = `${guitar.tunings[i].name}`;
+        tuningSelect.appendChild(option);
+    }
+} 
 
-}
+
+
+
 
 function loop(){
 
     getAnimationFrame(loop);
 }
 
-let guitar = new Neck(0);
-init();
-guitar.drawNotes();
+let guitar = new Neck();
+UI();
+guitar.lilTest();
+
+UIContainer.onchange = (e)=>{
+    // console.log(e.target.classList[1]);
+    switch(e.target.classList[1]){
+        case "scale":
+            console.log(e.target.value);
+            guitar.scale = guitar.scales[e.target.value].degs;
+            break;
+        case "root":
+            console.log(e.target.value);
+            guitar.root = parseInt(e.target.value);
+            break;
+        case "tuning":
+            guitar.tuning = guitar.tunings[parseInt(e.target.value)].tunNotes;
+            guitar.strings = [];
+            guitar.initNeck();
+            break;
+    }
+    guitar.clearNeck();
+    guitar.lilTest();
+}
