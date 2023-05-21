@@ -34,7 +34,10 @@ class Neck{
         this.scales = [
             {name: "chromatic", degs: [1,1,1,1,1,1,1,1,1,1,1,1]},
             {name: "major", degs: [2,2,1,2,2,2,1]},
-            {name: "minor", degs: [2,1,2,2,1,2,2]}
+            {name: "minor", degs: [2,1,2,2,1,2,2]},
+            {name: "minPent", degs: [3,2,2,3,2]},
+            {name: "majPent", degs: [2,2,3,2,3]},
+            {name: "japan", degs: [1,4,2,1,4]},
         ];
 
         this.scale = this.scales[0].degs;
@@ -96,10 +99,12 @@ class Neck{
             }
         }
         //draw open notes
+        c.textAlign = "center";
+        c.textBaseline = "middle";
         c.font = "20px sans-serif";
         c.fillStyle = "#ffffff";
         for(let i = 0; i<this.stringNum; i++){
-            c.fillText((this.notes[this.tuning[this.tuning.length-i-1]]).toUpperCase(),6,this.neckPos.startY+(i+1)*stringInterval+(stringInterval/5))
+            c.fillText((this.notes[this.tuning[this.tuning.length-i-1]]).toUpperCase(),6,this.neckPos.startY+(i+0.85)*stringInterval+(stringInterval/5))
         }
 
     }

@@ -24,15 +24,15 @@ option{
     color: white;
 }
 
-#canvas{
-    
+.dropDown{
+    padding: 10px;
+    border-radius: 10px;
+    font-size: large;
+    font-weight: 100;
 }
 
-#UIcontainer{
+.UIcontainer{
     display: flex;
     align-items: center;
-}
-
-#dropDown{
-    /* padding-left: 100px; */
+    gap: 15px;
 }
