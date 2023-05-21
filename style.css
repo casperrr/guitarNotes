@@ -36,3 +36,7 @@ option{
     align-items: center;
     gap: 15px;
 }
+
+.tuning{
+    margin-left: auto;
+}

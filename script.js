@@ -5,14 +5,18 @@ canvas.width = 800;
 canvas.height = 400;
 
 class Neck{
-    constructor(tune){
+    constructor(){
         this.stringNum = 6;
         this.frets = 12;
         //             0   1    2   3   4    5   6    7   8   9   10   11
         this.notes = ["a","a#","b","c","c#","d","d#","e","f","f#","g","g#"];
         //               standard       drop-d
-        this.tunings = [[7,0,5,10,2,7],[5,0,5,10,2,7]];
-        this.tuning = this.tunings[tune];
+        this.tunings = [
+            {name: "Standard", tunNotes:[7,0,5,10,2,7]},
+            {name: "Drop-D", tunNotes:[5,0,5,10,2,7]},
+            {name: "New Standard", tunNotes:[3,10,5,0,7,10]}
+        ];
+        this.tuning = this.tunings[0].tunNotes;
         this.strings = [];
         this.neckWidth = canvas.width*(1-0.03*2);
         this.neckHeight = canvas.height*(1-0.15*2);
@@ -210,6 +214,19 @@ function UI(){
         option.innerHTML = `${guitar.notes[i]}`;
         rootSelect.appendChild(option);
     }
+
+    //----------Tuning--------------------------------
+    let tuningSelect = document.createElement("select");
+    tuningSelect.classList.add("dropDown");
+    tuningSelect.classList.add("tuning");
+    rootSelect.setAttribute("value","tuning");
+    UIContainer.appendChild(tuningSelect);
+    for(let i = 0; i < guitar.tunings.length; i++){
+        let option = document.createElement("option");
+        option.setAttribute("value", `${i}`);
+        option.innerHTML = `${guitar.tunings[i].name}`;
+        tuningSelect.appendChild(option);
+    }
 } 
 
 
@@ -221,7 +238,7 @@ function loop(){
     getAnimationFrame(loop);
 }
 
-let guitar = new Neck(0);
+let guitar = new Neck();
 UI();
 guitar.lilTest();
 
@@ -235,6 +252,11 @@ UIContainer.onchange = (e)=>{
         case "root":
             console.log(e.target.value);
             guitar.root = parseInt(e.target.value);
+            break;
+        case "tuning":
+            guitar.tuning = guitar.tunings[parseInt(e.target.value)].tunNotes;
+            guitar.strings = [];
+            guitar.initNeck();
             break;
     }
     guitar.clearNeck();
