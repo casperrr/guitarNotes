@@ -26,6 +26,7 @@ class Neck{
             endX: (canvas.width-this.neckWidth)/2 + this.neckWidth,
             endY: (canvas.height-this.neckHeight)/2 + this.neckHeight,
         };
+        this.colorPallete = ["#b4e600","#ff8c00","#ff0059","#9500ff","#2962ff","#0ad2ff","#0fffdb"];
         // this.scales = {
         //     chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
         //     major: [2,2,1,2,2,2,1],
