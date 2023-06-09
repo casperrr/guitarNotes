@@ -201,6 +201,7 @@ function UI(){
         option.innerHTML = `${guitar.scales[i].name}`;
         scaleSelect.appendChild(option)
     }
+    scaleSelect.style.color = "white";
     
     //----------Root Note-----------------------------
     let rootSelect = document.createElement("select");
@@ -214,6 +215,7 @@ function UI(){
         option.innerHTML = `${guitar.notes[i]}`;
         rootSelect.appendChild(option);
     }
+    rootSelect.style.color = "white";
 
     //----------Tuning--------------------------------
     let tuningSelect = document.createElement("select");
@@ -227,6 +229,9 @@ function UI(){
         option.innerHTML = `${guitar.tunings[i].name}`;
         tuningSelect.appendChild(option);
     }
+    tuningSelect.style.color = "white";
+
+    //-----------Styling-------------------------------
 } 
 
 
