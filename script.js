@@ -28,7 +28,7 @@ class Neck{
         };
         this.colorPallete = ["#b4e600","#ff8c00","#ff0059","#9500ff","#2962ff","#0ad2ff","#0fffdb"];
         this.drawColors = false;
-        this.drawDegText = true;
+        this.drawDegText = false;
         // this.scales = {
         //     chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
         //     major: [2,2,1,2,2,2,1],
@@ -264,9 +264,7 @@ function UI(){
     let degColCheckboxCont = document.createElement("div");
     degColCheckboxCont.classList.add("checkBoxElement");
     let degColCheckboxText = document.createElement("p");
-    // degColCheckboxText.classList.add("whiteText");
-    degColCheckboxText.innerHTML = "Draw Degree Colour ";
-    
+    degColCheckboxText.innerHTML = "Draw Degree Colour";
     checkBoxContainer.appendChild(degColCheckboxCont);
     
     
@@ -277,8 +275,21 @@ function UI(){
     degColCheckboxCont.appendChild(degColCheckbox);
     degColCheckboxCont.appendChild(degColCheckboxText);
 
-
-    checkBoxContainer.style.color = "white";
+    //-----------DrawDegNumbers-CheckBox-------------------------------
+    let degTextCheckboxCont = document.createElement("div");
+    degTextCheckboxCont.classList.add("checkBoxElement");
+    let degTextCheckboxText = document.createElement("p");
+    degTextCheckboxText.innerHTML = "Draw Degree Number";
+    checkBoxContainer.appendChild(degTextCheckboxCont);
+    
+    
+    let degTextCheckbox = document.createElement("input");
+    degTextCheckbox.setAttribute("type","checkbox");
+    degTextCheckbox.classList.add("checkBox");
+    degTextCheckbox.classList.add("degTextDraw");
+    degTextCheckboxCont.appendChild(degTextCheckbox);
+    degTextCheckboxCont.appendChild(degTextCheckboxText);
+    
 
 } 
 
@@ -311,6 +322,12 @@ UIContainer.onchange = (e)=>{
             guitar.tuning = guitar.tunings[parseInt(e.target.value)].tunNotes;
             guitar.strings = [];
             guitar.initNeck();
+            break;
+        case "degColDraw":
+            guitar.drawColors = !guitar.drawColors;
+            break;
+        case "degTextDraw":
+            guitar.drawDegText = !guitar.drawDegText;
             break;
     }
     guitar.clearNeck();
