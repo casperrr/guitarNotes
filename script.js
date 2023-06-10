@@ -9,7 +9,7 @@ class Neck{
         this.stringNum = 6;
         this.frets = 12;
         //             0   1    2   3   4    5   6    7   8   9   10   11
-        this.notes = ["a","a#","b","c","c#","d","d#","e","f","f#","g","g#"];
+        this.notes = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"];
         //               standard       drop-d
         this.tunings = [
             {name: "Standard", tunNotes:[7,0,5,10,2,7]},
@@ -39,12 +39,12 @@ class Neck{
         // };
 
         this.scales = [
-            {name: "chromatic", degs: [1,1,1,1,1,1,1,1,1,1,1,1]},
-            {name: "major", degs: [2,2,1,2,2,2,1]},
-            {name: "minor", degs: [2,1,2,2,1,2,2]},
-            {name: "minPent", degs: [3,2,2,3,2]},
-            {name: "majPent", degs: [2,2,3,2,3]},
-            {name: "japan", degs: [1,4,2,1,4]},
+            {name: "Chromatic", degs: [1,1,1,1,1,1,1,1,1,1,1,1]},
+            {name: "Major", degs: [2,2,1,2,2,2,1]},
+            {name: "Minor", degs: [2,1,2,2,1,2,2]},
+            {name: "MinPent", degs: [3,2,2,3,2]},
+            {name: "MajPent", degs: [2,2,3,2,3]},
+            {name: "Japan", degs: [1,4,2,1,4]},
         ];
 
         this.scale = this.scales[0].degs;
