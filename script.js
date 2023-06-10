@@ -27,7 +27,7 @@ class Neck{
             endY: (canvas.height-this.neckHeight)/2 + this.neckHeight,
         };
         this.colorPallete = ["#b4e600","#ff8c00","#ff0059","#9500ff","#2962ff","#0ad2ff","#0fffdb"];
-        this.drawColors = true;
+        this.drawColors = false;
         // this.scales = {
         //     chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
         //     major: [2,2,1,2,2,2,1],
@@ -136,6 +136,9 @@ class Neck{
         c.arc(x,y,17,0,Math.PI*2);
         // c.fillStyle = isroot? '#ff0000':'#000000';
         c.fillStyle = this.colorPallete[degColor];
+        if(!this.drawColors && degColor != 2){
+            c.fillStyle = "#000000";
+        }
         c.fill();
         c.stroke();
         c.textAlign = "center";
