@@ -27,6 +27,7 @@ class Neck{
             endY: (canvas.height-this.neckHeight)/2 + this.neckHeight,
         };
         this.colorPallete = ["#b4e600","#ff8c00","#ff0059","#9500ff","#2962ff","#0ad2ff","#0fffdb"];
+        this.drawColors = true;
         // this.scales = {
         //     chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
         //     major: [2,2,1,2,2,2,1],
@@ -45,8 +46,8 @@ class Neck{
             {name: "japan", degs: [1,4,2,1,4]},
         ];
 
-        this.scale = this.scales[0].degs;
-        this.root = 0;
+        this.scale = this.scales[1].degs;
+        this.root = 10;
 
         this.initNeck();
     }
@@ -128,12 +129,13 @@ class Neck{
             
     }
 
-    drawSingleNote(str,fret,noteText,isroot){
+    drawSingleNote(str,fret,noteText,degColor){
         let x = (this.neckWidth/this.frets*fret)+this.neckPos.startX+(this.neckWidth/this.frets)/2;
         let y = str.yPos;
         c.beginPath();
         c.arc(x,y,17,0,Math.PI*2);
-        c.fillStyle = isroot? '#ff0000':'#000000';
+        // c.fillStyle = isroot? '#ff0000':'#000000';
+        c.fillStyle = this.colorPallete[degColor];
         c.fill();
         c.stroke();
         c.textAlign = "center";
@@ -153,15 +155,30 @@ class Neck{
         });
     }
 
+
+    //change isRoot to maybe like a scale degree and do colour based off that
+    //if dont want to draw colours I can do if number not 1 or something or whatever the root is.
+
+    //To have chords I need to colour every 
+    //chords mode:
+    //I need to have a scale and then eg have a root note string like the low E
+    //each note in the scale will be a chords and it will need a chord formula eg shell chords which will be 1,3,7 each 1 3 7 from each root note will need to fit into the scale.
+    //the next chord just moves each note up to the next degree in the scale.
+    //you have the scale and the root of the chord in the scale. the interval from the scale tonic and the chord root is how BROO IM LOSING MY TRAIN OF THOUGHT
+    //one solution i can kinda think of rn is just to like have a chord formula like 137 for example and just map colours to every chord from each root in a particular scale eg key of gMaj would start with GBF# in on colour and then ACG in another. Just adding one note up in the scale for the next chord. GOT I WROTE TO MUCH AND SAID SO LITTLE i need to refactor this wording because its bad and u know what i need to refactor this code too because thats also bad. 
+
+    //idea for feature. add some sort of like tab into the program it it can tell u what scales its a part of or what key/keys it fits into.
+
     lilTest(){
         this.strings.forEach(strin =>{
             let index = ((this.root+12)-(strin.openNote+1))%12;
             //position sontrolled by sum of erm steps
-            this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12],true);
-            let rootLoc = index;
+            let degCol = 3;
             this.scale.forEach(step =>{
                 index = (step+index)%12;
-                if(index != rootLoc) this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12]);
+                this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12],degCol);
+                degCol = (degCol+1)%7;
+                
                 
             })
         });
@@ -248,6 +265,7 @@ let guitar = new Neck();
 UI();
 guitar.lilTest();
 
+//------------UI Event Handler----------------
 UIContainer.onchange = (e)=>{
     // console.log(e.target.classList[1]);
     switch(e.target.classList[1]){
