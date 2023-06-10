@@ -26,6 +26,9 @@ class Neck{
             endX: (canvas.width-this.neckWidth)/2 + this.neckWidth,
             endY: (canvas.height-this.neckHeight)/2 + this.neckHeight,
         };
+        this.colorPallete = ["#ff0080","#ff8c00","#1900ff","#63d400","#9500ff","#bfd400","#00d2ff","#008705","#ff4ded","#2a806a","#b54e00","#004d8c"];
+        this.drawColors = false;
+        this.drawDegText = false;
         // this.scales = {
         //     chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
         //     major: [2,2,1,2,2,2,1],
@@ -127,12 +130,16 @@ class Neck{
             
     }
 
-    drawSingleNote(str,fret,noteText,isroot){
+    drawSingleNote(str,fret,noteText,degColor){
         let x = (this.neckWidth/this.frets*fret)+this.neckPos.startX+(this.neckWidth/this.frets)/2;
         let y = str.yPos;
         c.beginPath();
         c.arc(x,y,17,0,Math.PI*2);
-        c.fillStyle = isroot? '#ff0000':'#000000';
+        // c.fillStyle = isroot? '#ff0000':'#000000';
+        c.fillStyle = this.colorPallete[degColor];
+        if(!this.drawColors && degColor != 0){
+            c.fillStyle = "#000000";
+        }
         c.fill();
         c.stroke();
         c.textAlign = "center";
@@ -152,15 +159,29 @@ class Neck{
         });
     }
 
+
+    //To have chords I need to colour every 
+    //chords mode:
+    //I need to have a scale and then eg have a root note string like the low E
+    //each note in the scale will be a chords and it will need a chord formula eg shell chords which will be 1,3,7 each 1 3 7 from each root note will need to fit into the scale.
+    //the next chord just moves each note up to the next degree in the scale.
+    //you have the scale and the root of the chord in the scale. the interval from the scale tonic and the chord root is how BROO IM LOSING MY TRAIN OF THOUGHT
+    //one solution i can kinda think of rn is just to like have a chord formula like 137 for example and just map colours to every chord from each root in a particular scale eg key of gMaj would start with GBF# in on colour and then ACG in another. Just adding one note up in the scale for the next chord. GOT I WROTE TO MUCH AND SAID SO LITTLE i need to refactor this wording because its bad and u know what i need to refactor this code too because thats also bad. 
+
+    //idea for feature. add some sort of like tab into the program it it can tell u what scales its a part of or what key/keys it fits into.
+
     lilTest(){
+        let scaleLength = this.scale.length;
         this.strings.forEach(strin =>{
             let index = ((this.root+12)-(strin.openNote+1))%12;
             //position sontrolled by sum of erm steps
-            this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12],true);
-            let rootLoc = index;
+            let degNum = 1;
             this.scale.forEach(step =>{
                 index = (step+index)%12;
-                if(index != rootLoc) this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12]);
+                let noteText = this.drawDegText? degNum+1 : this.notes[strin.notes[index]%12];
+                // this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12],degCol);
+                this.drawSingleNote(strin,index,noteText,degNum);
+                degNum = (degNum+1)%scaleLength;
                 
             })
         });
@@ -184,6 +205,7 @@ class GString{
 }
 
 //UI
+//At some point please refactor this into like a class with reusable functions and stuff because this is ugly, very very ugly and annoying to work with. THANKS FUTURE ME.
 function UI(){
     UIContainer = document.createElement("div");
     UIContainer.classList.add("UIcontainer");
@@ -230,8 +252,44 @@ function UI(){
         tuningSelect.appendChild(option);
     }
     tuningSelect.style.color = "white";
+    
+    //-----------CheckBox-Container-------------------------------
+    let checkBoxContainer = document.createElement("div");
+    checkBoxContainer.classList.add("UIcontainer");
+    checkBoxContainer.classList.add("CheckBoxContainer");
+    UIContainer.appendChild(checkBoxContainer);
+    
+    //-----------DrawDegColor-CheckBox-------------------------------
+    let degColCheckboxCont = document.createElement("div");
+    degColCheckboxCont.classList.add("checkBoxElement");
+    let degColCheckboxText = document.createElement("p");
+    degColCheckboxText.innerHTML = "Draw Degree Colour";
+    checkBoxContainer.appendChild(degColCheckboxCont);
+    
+    
+    let degColCheckbox = document.createElement("input");
+    degColCheckbox.setAttribute("type","checkbox");
+    degColCheckbox.classList.add("checkBox");
+    degColCheckbox.classList.add("degColDraw");
+    degColCheckboxCont.appendChild(degColCheckbox);
+    degColCheckboxCont.appendChild(degColCheckboxText);
 
-    //-----------Styling-------------------------------
+    //-----------DrawDegNumbers-CheckBox-------------------------------
+    let degTextCheckboxCont = document.createElement("div");
+    degTextCheckboxCont.classList.add("checkBoxElement");
+    let degTextCheckboxText = document.createElement("p");
+    degTextCheckboxText.innerHTML = "Draw Degree Number";
+    checkBoxContainer.appendChild(degTextCheckboxCont);
+    
+    
+    let degTextCheckbox = document.createElement("input");
+    degTextCheckbox.setAttribute("type","checkbox");
+    degTextCheckbox.classList.add("checkBox");
+    degTextCheckbox.classList.add("degTextDraw");
+    degTextCheckboxCont.appendChild(degTextCheckbox);
+    degTextCheckboxCont.appendChild(degTextCheckboxText);
+    
+
 } 
 
 
@@ -247,6 +305,7 @@ let guitar = new Neck();
 UI();
 guitar.lilTest();
 
+//------------UI Event Handler----------------
 UIContainer.onchange = (e)=>{
     // console.log(e.target.classList[1]);
     switch(e.target.classList[1]){
@@ -262,6 +321,12 @@ UIContainer.onchange = (e)=>{
             guitar.tuning = guitar.tunings[parseInt(e.target.value)].tunNotes;
             guitar.strings = [];
             guitar.initNeck();
+            break;
+        case "degColDraw":
+            guitar.drawColors = !guitar.drawColors;
+            break;
+        case "degTextDraw":
+            guitar.drawDegText = !guitar.drawDegText;
             break;
     }
     guitar.clearNeck();
