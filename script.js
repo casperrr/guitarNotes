@@ -28,6 +28,7 @@ class Neck{
         };
         this.colorPallete = ["#b4e600","#ff8c00","#ff0059","#9500ff","#2962ff","#0ad2ff","#0fffdb"];
         this.drawColors = false;
+        this.drawDegText = true;
         // this.scales = {
         //     chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
         //     major: [2,2,1,2,2,2,1],
@@ -159,9 +160,6 @@ class Neck{
     }
 
 
-    //change isRoot to maybe like a scale degree and do colour based off that
-    //if dont want to draw colours I can do if number not 1 or something or whatever the root is.
-
     //To have chords I need to colour every 
     //chords mode:
     //I need to have a scale and then eg have a root note string like the low E
@@ -177,10 +175,14 @@ class Neck{
             let index = ((this.root+12)-(strin.openNote+1))%12;
             //position sontrolled by sum of erm steps
             let degCol = 3;
+            let degNum = 1;
             this.scale.forEach(step =>{
                 index = (step+index)%12;
-                this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12],degCol);
+                let noteText = this.drawDegText? degNum+1 : this.notes[strin.notes[index]%12];
+                // this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12],degCol);
+                this.drawSingleNote(strin,index,noteText,degCol);
                 degCol = (degCol+1)%7;
+                degNum = (degNum+1)%7;
                 
                 
             })
