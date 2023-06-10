@@ -253,8 +253,33 @@ function UI(){
         tuningSelect.appendChild(option);
     }
     tuningSelect.style.color = "white";
+    
+    //-----------CheckBox-Container-------------------------------
+    let checkBoxContainer = document.createElement("div");
+    checkBoxContainer.classList.add("UIcontainer");
+    checkBoxContainer.classList.add("CheckBoxContainer");
+    UIContainer.appendChild(checkBoxContainer);
+    
+    //-----------DrawDegColor-CheckBox-------------------------------
+    let degColCheckboxCont = document.createElement("div");
+    degColCheckboxCont.classList.add("checkBoxElement");
+    let degColCheckboxText = document.createElement("p");
+    // degColCheckboxText.classList.add("whiteText");
+    degColCheckboxText.innerHTML = "Draw Degree Colour ";
+    
+    checkBoxContainer.appendChild(degColCheckboxCont);
+    
+    
+    let degColCheckbox = document.createElement("input");
+    degColCheckbox.setAttribute("type","checkbox");
+    degColCheckbox.classList.add("checkBox");
+    degColCheckbox.classList.add("degColDraw");
+    degColCheckboxCont.appendChild(degColCheckbox);
+    degColCheckboxCont.appendChild(degColCheckboxText);
 
-    //-----------Styling-------------------------------
+
+    checkBoxContainer.style.color = "white";
+
 } 
 
 
