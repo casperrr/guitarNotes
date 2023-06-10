@@ -26,9 +26,10 @@ class Neck{
             endX: (canvas.width-this.neckWidth)/2 + this.neckWidth,
             endY: (canvas.height-this.neckHeight)/2 + this.neckHeight,
         };
-        this.colorPallete = ["#b4e600","#ff8c00","#ff0059","#9500ff","#2962ff","#0ad2ff","#0fffdb"];
-        this.drawColors = false;
-        this.drawDegText = false;
+        // this.colorPallete = ["#b4e600","#ff8c00","#ff0059","#9500ff","#2962ff","#0ad2ff","#0fffdb"];
+        this.colorPallete = ["#ff0080","#ff8c00","#1900ff","#63d400","#9500ff","#bfd400","#00d2ff","#008705","#ff4ded","#2a806a","#b54e00","#004d8c"];
+        this.drawColors = true;
+        this.drawDegText = true;
         // this.scales = {
         //     chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
         //     major: [2,2,1,2,2,2,1],
@@ -47,8 +48,8 @@ class Neck{
             {name: "japan", degs: [1,4,2,1,4]},
         ];
 
-        this.scale = this.scales[1].degs;
-        this.root = 10;
+        this.scale = this.scales[0].degs;
+        this.root = 0;
 
         this.initNeck();
     }
@@ -171,19 +172,17 @@ class Neck{
     //idea for feature. add some sort of like tab into the program it it can tell u what scales its a part of or what key/keys it fits into.
 
     lilTest(){
+        let scaleLength = this.scale.length;
         this.strings.forEach(strin =>{
             let index = ((this.root+12)-(strin.openNote+1))%12;
             //position sontrolled by sum of erm steps
-            let degCol = 3;
             let degNum = 1;
             this.scale.forEach(step =>{
                 index = (step+index)%12;
                 let noteText = this.drawDegText? degNum+1 : this.notes[strin.notes[index]%12];
                 // this.drawSingleNote(strin,index,this.notes[strin.notes[index]%12],degCol);
-                this.drawSingleNote(strin,index,noteText,degCol);
-                degCol = (degCol+1)%7;
-                degNum = (degNum+1)%7;
-                
+                this.drawSingleNote(strin,index,noteText,degNum);
+                degNum = (degNum+1)%scaleLength;
                 
             })
         });
@@ -207,6 +206,7 @@ class GString{
 }
 
 //UI
+//At some point please refactor this into like a class with reusable functions and stuff because this is ugly, very very ugly and annoying to work with. THANKS FUTURE ME.
 function UI(){
     UIContainer = document.createElement("div");
     UIContainer.classList.add("UIcontainer");
