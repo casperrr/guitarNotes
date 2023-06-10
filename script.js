@@ -26,10 +26,9 @@ class Neck{
             endX: (canvas.width-this.neckWidth)/2 + this.neckWidth,
             endY: (canvas.height-this.neckHeight)/2 + this.neckHeight,
         };
-        // this.colorPallete = ["#b4e600","#ff8c00","#ff0059","#9500ff","#2962ff","#0ad2ff","#0fffdb"];
         this.colorPallete = ["#ff0080","#ff8c00","#1900ff","#63d400","#9500ff","#bfd400","#00d2ff","#008705","#ff4ded","#2a806a","#b54e00","#004d8c"];
-        this.drawColors = true;
-        this.drawDegText = true;
+        this.drawColors = false;
+        this.drawDegText = false;
         // this.scales = {
         //     chromatic: [1,1,1,1,1,1,1,1,1,1,1,1],
         //     major: [2,2,1,2,2,2,1],
@@ -138,7 +137,7 @@ class Neck{
         c.arc(x,y,17,0,Math.PI*2);
         // c.fillStyle = isroot? '#ff0000':'#000000';
         c.fillStyle = this.colorPallete[degColor];
-        if(!this.drawColors && degColor != 2){
+        if(!this.drawColors && degColor != 0){
             c.fillStyle = "#000000";
         }
         c.fill();
