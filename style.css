@@ -3,6 +3,10 @@
     padding: 0;
     box-sizing: border-box;
     background: black;
+    font-family: sans-serif;
+    font-family: "Poppins" sans-serif;
+    font-weight: 500;
+    color: white;
 }
 
 body{
@@ -31,10 +35,55 @@ option{
     font-weight: 100;
 }
 
+
+/* ----------CheckBox-Styling------------ */
+    .checkBox{
+        appearance: none;
+        -webkit-appearance: none;
+        height: 20px;
+        width: 20px;
+        background-color: rgb(167, 167, 167, 0);
+        border-radius: 5px;
+        border-color: white;
+        border-width: 2px;
+        border-style: solid;
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+    }
+
+    .checkBox:hover{
+        /* background-color: rgb(194, 194, 194); */
+        scale: 1.07;
+    }
+
+    .checkBox:checked{
+        background-color: rgba(250, 0, 137, 0.781);
+        /* border-width: 1px;
+        border-color: white;
+        border-style: solid; */
+    }
+
 .UIcontainer{
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 15px;
+}
+
+.CheckBoxContainer{
+    flex-basis: 100%;
+    height: 0;
+}
+
+.checkBoxElement{
+    display: flex;
+    padding: 10px;
+    border-radius: 8px;
+    gap: 8px;
+    border-color: white;
+    border-style: solid;
+    border-width: 1px;
+    align-items: center;
 }
 
 .tuning{
